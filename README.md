@@ -2,7 +2,7 @@
 
 > Fictional stakeholder brief; the data is real and public (NZa Open DIS data, CC0).
 
-**Status:** Phase 1 (Define) done. Database, queries and findings follow. The title will
+**Status:** definition and database done. Queries and findings follow. The title will
 carry the answer once the analysis is finished.
 
 ## The brief
@@ -117,6 +117,36 @@ follow-ups, so the error is small.
 the codes above. If time runs short, drop KPI 4 (channel mix); KPIs 1, 2, 3 and 5 still
 answer the main question.
 
+## Database
+
+PostgreSQL database `remote_care`, four tables:
+
+![Database schema](docs/schema.png)
+
+- **`specialism`** (701 rows) and **`activity`** (4,074 rows): lookup tables from the NZa
+  reference files.
+- **`channel_map`** (6 rows): the activity code to channel mapping above, typed by hand, so
+  the business rule lives in one table instead of in every query.
+- **`consult_volume`** (185,440 rows): the number of activities per year, specialism and
+  activity, summed from the 10,865,746 rows of `02_DBC_PROFIEL`. Primary key: year +
+  specialism + activity.
+
+Every code is stored as text, because codes have leading zeros (`0303`, `039133`).
+
+**How the data is loaded.** Each CSV first goes into a staging table, an exact copy with
+every column as text. SQL then picks, renames, converts and sums the columns into the four
+tables above. **12,030 rows were dropped**: their activity code (`039679`, `039813`,
+`039814`) is missing from the NZa activity reference table. None of the three is a consult
+code, so no KPI is affected.
+
+**Build the database** (from the project folder, with the CSVs in `data/raw/`):
+
+```bash
+createdb remote_care
+psql -d remote_care -f sql/01_schema.sql
+psql -d remote_care -f sql/02_load.sql
+```
+
 ## Data source
 
 - [Open DIS data, NZa](https://opendisdata.nza.nl/), public domain (CC0).
@@ -132,4 +162,5 @@ answer the main question.
 sql/          schema, load and analysis scripts, numbered in run order
 notebooks/    Python step: query the database into pandas, charts
 data/raw/     the downloaded CSVs (gitignored)
+docs/         the schema diagram
 ```
