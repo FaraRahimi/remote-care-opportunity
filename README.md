@@ -147,6 +147,23 @@ psql -d remote_care -f sql/01_schema.sql
 psql -d remote_care -f sql/02_load.sql
 ```
 
+**Validate the load.** `sql/03_validate.sql` runs seven checks, each with its expected
+number written in the comment above it before it was run. All seven pass:
+
+1. Row counts of the four tables: 701, 4,074, 6 and 185,440.
+2. Grand total of activities equals the load checksum: 1,186,779,701.
+3. One line per year, 2012 to 2026; only 2026 is far smaller (still being filled in).
+4. 28 specialisms appear in the data.
+5. The six mapped codes carry the expected NZa names and classes, and video has no gap
+   (old code 2018 to 2020, new code from 2021).
+6. No fan-out: joining `channel_map` leaves the 2019 to 2024 total unchanged (114,525,564).
+7. One cell (2024, ophthalmology, phone) is the same in the raw staging table and the final
+   table: 118,888.
+
+```bash
+psql -P pager=off -d remote_care -f sql/03_validate.sql
+```
+
 ## Data source
 
 - [Open DIS data, NZa](https://opendisdata.nza.nl/), public domain (CC0).
