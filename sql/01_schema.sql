@@ -1,5 +1,10 @@
 -- 01_schema.sql: creates the four empty tables of the remote_care database (run this first, then 02_load.sql)
 
+-- Drop the views first: they depend on the tables (04_views.sql), so the tables cannot be dropped while they exist
+DROP VIEW IF EXISTS v_national_year;
+DROP VIEW IF EXISTS v_specialism_year;
+DROP VIEW IF EXISTS v_base;
+
 -- Drop first so the script can be re-run from scratch; the data is rebuilt from the CSVs by 02_load.sql
 DROP TABLE IF EXISTS consult_volume; -- it points to specialism and activity
 DROP TABLE IF EXISTS channel_map; -- it points to activity
