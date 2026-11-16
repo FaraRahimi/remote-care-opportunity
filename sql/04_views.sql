@@ -76,3 +76,34 @@ SELECT *
 FROM v_specialism_year
 WHERE year = 2024
   AND specialism_code = '0301';
+
+-- v_national_year: one row per year for the whole country, 2019 to 2024.
+-- Why it exists: the national benchmark every specialism is compared with (KPIs 2 and 3), and
+-- the national trend (Q1). Rule 3: the national share is all remote consults divided by all
+-- consults (add up first, then divide), never the average of the specialisms' shares, which
+-- would give a tiny specialism the same weight as a huge one.
+-- Read by Q1, Q3, Q4 and Q5.
+-- Built from: v_specialism_year (so the clinic, remote and telemonitoring rules are not repeated).
+-- Expected rows: 6 (one per year, 2019 to 2024). Cross-check: all consults over the six years =
+-- 113,939,420 (check 2 of v_specialism_year).
+CREATE VIEW v_national_year AS
+SELECT year,
+       SUM(clinic) AS clinic,                                            -- all clinic consults in the country
+       SUM(remote) AS remote,                                            -- all remote consults in the country
+       SUM(all_consults) AS all_consults,                                -- all consults in the country
+       ROUND(100.0 * SUM(remote) / SUM(all_consults), 1) AS remote_share_pct   -- rule 3: add up first, then divide
+FROM v_specialism_year                                                   -- the KPI rules are already applied there
+GROUP BY year;                                                           -- one row per year
+
+-- Check v_national_year 1: number of rows. Expected: 6
+SELECT COUNT(*) AS row_count
+FROM v_national_year;
+
+-- Check v_national_year 2: total of all consults over the six years. Expected: 113,939,420
+SELECT SUM(all_consults) AS total_consults
+FROM v_national_year;
+
+-- Check v_national_year 3 (why rule 3 matters): 2024, pooled share vs the average of the specialisms' shares.
+-- Expected: the two numbers differ (the average gives small specialisms too much weight)
+SELECT (SELECT remote_share_pct FROM v_national_year WHERE year = 2024) AS pooled_share,
+       (SELECT ROUND(AVG(remote_share_pct), 1) FROM v_specialism_year WHERE year = 2024) AS average_of_shares;
