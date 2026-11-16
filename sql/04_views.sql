@@ -1,4 +1,4 @@
--- 04_views.sql: creates the three views used by the analysis (run after 03_validate.sql)
+-- 04_views.sql: creates the four views used by the analysis (run after 03_validate.sql)
 -- Layers: tables -> v_base (rules) -> v_specialism_year (KPIs per specialism) -> v_national_year (KPIs for the country)
 --         and v_specialism_year -> v_specialism_growth (KPI 3: change and momentum per specialism)
 
