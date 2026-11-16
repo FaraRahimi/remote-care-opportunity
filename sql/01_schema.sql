@@ -1,6 +1,7 @@
 -- 01_schema.sql: creates the four empty tables of the remote_care database (run this first, then 02_load.sql)
 
 -- Drop the views first: they depend on the tables (04_views.sql), so the tables cannot be dropped while they exist
+DROP VIEW IF EXISTS v_specialism_growth;
 DROP VIEW IF EXISTS v_national_year;
 DROP VIEW IF EXISTS v_specialism_year;
 DROP VIEW IF EXISTS v_base;
