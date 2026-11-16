@@ -53,7 +53,7 @@ SELECT specialism_code,
 FROM v_specialism_year
 WHERE year IN (2019, 2024)                                                           -- only the two years compared
 GROUP BY specialism_code, specialism_name                                            -- one row per specialism
-ORDER BY share_2024 DESC;                                                            -- most remote first
+ORDER BY share_2024 DESC, specialism_name;                                           -- most remote first; name breaks ties (49.7% twice), so the order never changes
 -- Result: every specialism is more remote in 2024 than in 2019, and 15 of 27 are above the national
 -- share (35.9%). The highest shares are in small specialisms (clinical genetics 85.9%, radiology 81.0%,
 -- anaesthesiology 68.8%), each under 2% of all consults (Q2). Among the 14 large specialisms,
@@ -87,7 +87,7 @@ SELECT g.specialism_code,
        n.national_momentum_pts                                             -- the same for the whole country
 FROM v_specialism_growth AS g
 CROSS JOIN national AS n                                                   -- national has one row, so it is added to every specialism
-ORDER BY g.momentum_pts DESC;                                              -- still growing fastest first
+ORDER BY g.momentum_pts DESC, g.specialism_name;                             -- still growing fastest first; name breaks ties (+1.8 twice), so the order never changes
 -- Result: every specialism with 2019 data gained since 2019 (+5.5 points for ophthalmology up to
 -- +37.1 for allergology; country +20.4). Momentum since 2022 is small everywhere (country +1.2):
 -- the largest gains are in small specialisms (radiology +8.1, allergology +7.7), and among the large

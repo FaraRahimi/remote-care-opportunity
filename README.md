@@ -327,6 +327,11 @@ You need PostgreSQL (tested with 16) with `psql` on your path, and Python (teste
    psql -P pager=off -d remote_care -f sql/05_analyse.sql
    ```
 
+   The whole build takes about 30 seconds. On the first run, `psql` prints `NOTICE` lines such
+   as `view "v_base" does not exist, skipping`: they are expected (each script first drops what
+   it is about to create, so it can be re-run), not errors. Only `ERROR` lines mean something
+   went wrong.
+
 4. Set up Python:
 
    ```bash
