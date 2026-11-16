@@ -1,1 +1,5 @@
-# Filled in at Phase 5 (Python), with only the packages the code actually uses.
+ipykernel==7.4.0
+matplotlib==3.11.2
+pandas==3.1.1
+psycopg[binary]==3.3.9
+SQLAlchemy==2.1.8
